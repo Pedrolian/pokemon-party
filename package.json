@@ -1,0 +1,28 @@
+{
+  "name": "pokemon-party",
+  "version": "1.0.0",
+  "description": "Pokemon Party Tool to display to your live stream the pokemon in your party.",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Pedrolian/pokemon-party.git"
+  },
+  "keywords": [
+    "pokemon",
+    "party",
+    "tool",
+    "obs",
+    "xsplit",
+    "stream",
+    "twitch"
+  ],
+  "author": "Pedrolian",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Pedrolian/pokemon-party/issues"
+  },
+  "homepage": "https://github.com/Pedrolian/pokemon-party#readme"
+}
