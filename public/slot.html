@@ -3,6 +3,8 @@
 <head>
   <link href="/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 
+  <link href="/css/party/sprite.css" rel="stylesheet">
+
   <style type="text/css">
     body, html{
       background-color: #eee;
@@ -11,18 +13,6 @@
       margin: 0px;
       padding: 0px;
     }
-    div#sprite {
-      position: relative;
-    }
-    div#name {
-      position: absolute;
-      bottom: 5px;
-      right: 0;
-      left: 0;
-      background: rgba(46, 170, 220, 0.6);
-      color: white;
-      opacity: 0.9;
-    }
   </style>
 
 </head>
@@ -30,11 +20,7 @@
 
   <!-- Party -->
   <div class="party">
-    <div id="slot-1">
-      <div id="sprite" class="">
-        <div id="name" class="text-center"></div>
-      </div>
-    </div>
+    <div id="slot-1"></div>
   </div>
 
   <script src="/jquery/dist/jquery.min.js"></script>
@@ -63,13 +49,18 @@
     
     socket.on('party', (data) => {
       var tmp = data.party[slotID];
+      $(`.party #slot-1`).html("");
       if(tmp.pokemon)
-      {
-        $(`.party #slot-1 #name`).html(tmp.name);
-        $(`.party #slot-1 #sprite`).addClass(`pokedex-gen-${data.generation}-${tmp.type} pokemon-${tmp.pokemon.id}`);
-      }
+        $(`.party #slot-1`).html( SpriteDiv(data.generation, tmp.type, tmp.pokemon.id, tmp.name) );
     });
   </script>  
+
+  <script type="text/javascript">
+    function SpriteDiv(generation, type, pokemon, name)
+    {
+      return `<div id="pokemon-sprite" class="text-center center-block pokedex-gen-${generation}-${type} pokemon-${pokemon}"><div id="pokemon-name" class="text-center">${name}</div></div>`
+    }
+  </script>
 
 </body>
 </html> 

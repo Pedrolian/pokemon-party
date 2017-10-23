@@ -4,6 +4,8 @@
   <link href="/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/awesomplete/awesomplete.css" />
 
+  <link href="/css/party/sprite.css" rel="stylesheet">
+
   <style type="text/css">
     body{
       background-color: #eee;
@@ -94,7 +96,7 @@
           $(`.party #slot-${Number(key)+1} input#pokemon`).val(data.party[key].pokemon.name);
           $(`.party #slot-${Number(key)+1} input#name`).val(data.party[key].name);
           $(`.party #slot-${Number(key)+1} select#type`).val(data.party[key].type);
-          $(`.party #slot-${Number(key)+1} #sprite`).addClass(`pokedex-gen-${data.generation}-${data.party[key].type} pokemon-${data.party[key].pokemon.id}`);
+          $(`.party #slot-${Number(key)+1} #sprite`).html( SpriteDiv(data.generation, data.party[key].type, data.party[key].pokemon.id, data.party[key].name) );
         }
       }
 
@@ -195,6 +197,13 @@
         }
 
       });
+    }
+  </script>
+
+  <script type="text/javascript">
+    function SpriteDiv(generation, type, pokemon, name)
+    {
+      return `<div id="pokemon-sprite" class="text-center center-block pokedex-gen-${generation}-${type} pokemon-${pokemon}"><div id="pokemon-name" class="text-center">${name}</div></div>`
     }
   </script>
 

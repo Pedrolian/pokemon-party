@@ -1,0 +1,12 @@
+div#pokemon-sprite {
+  position: relative;
+}
+div#pokemon-name {
+  position: absolute;
+  bottom: -5px;
+  right: 0;
+  left: 0;
+  background: rgba(46, 170, 220, 0.6);
+  color: white;
+  opacity: 0.9;
+}

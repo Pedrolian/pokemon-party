@@ -1,7 +1,11 @@
 <!doctype html>  
 <html lang="en">  
 <head>
+
   <link href="/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/css/pokedex/bundled.css" rel="stylesheet">
+
+  <link href="/css/party/sprite.css" rel="stylesheet">
 
   <style type="text/css">
     body{
@@ -68,6 +72,8 @@
     </div>
   </form>
 
+  <div class="parties"></div>
+
   <script src="/jquery/dist/jquery.min.js"></script>
   <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
@@ -82,8 +88,43 @@
 
     socket.on('parties', (data) =>
     {
-      console.log(data);
+      for(var key in data)
+      {
+        var party = data[key];
+        $('.parties').append(`
+          <div class="party row" id="party-${party.ID}">
+            <div class="panel panel-primary">
+              <div class="panel-heading row">
+                <div class="panel-title col-xs-8 text-left">Party: ${party.ID}</div>
+                <div class="col-xs-4 text-right">
+                  <a href="/party/${party.ID}" class="btn btn-xs btn-default"><span class="glyphicon glyphicon-new-window"></span>  </a>
+                </div>
+              </div>
+              <div class="panel-body">
+              </div>
+            </div>
+          </div>
+          <div class="clearfix"></div>
+        `);
+        for(var i = 1; i <= 6; i++)
+        {
+          if(party.party[i-1].pokemon)
+            $(`#party-${party.ID} .panel-body`).append(`
+              <div class="col-xs-2" id="slot-${i}">
+                ${SpriteDiv(party.generation, party.party[i-1].type, party.party[i-1].pokemon.id, party.party[i-1].name)}
+              </div>
+            `);
+        }
+      }
+
     });
+  </script>
+
+  <script type="text/javascript">
+    function SpriteDiv(generation, type, pokemon, name)
+    {
+      return `<div id="pokemon-sprite" class="text-center center-block pokedex-gen-${generation}-${type} pokemon-${pokemon}"><div id="pokemon-name" class="text-center">${name}</div></div>`
+    }
   </script>
 
 </body>

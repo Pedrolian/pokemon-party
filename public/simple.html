@@ -3,24 +3,14 @@
 <head>
   <link href="/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
 
+  <link href="/css/party/sprite.css" rel="stylesheet">
+
   <style type="text/css">
     body, html{
       width: 100vw;
       height: 100vh;
       margin: 0px;
       padding: 0px;
-    }
-    div#sprite {
-      position: relative;
-    }
-    div#name {
-      position: absolute;
-      bottom: 5px;
-      right: 0;
-      left: 0;
-      background: rgba(46, 170, 220, 0.6);
-      color: white;
-      opacity: 0.9;
     }
   </style>
 
@@ -44,6 +34,7 @@
     socket.on('connect', () =>
     {
       socket.emit('party', partyID);
+      Seed();
     });
 
     socket.on('generation', (data) => 
@@ -56,13 +47,13 @@
 
     socket.on('party', (data) => 
     {
-      Seed();
       for(var key in data.party)
       {
+        $(`.party #slot-${Number(key)+1}`).html("");
+
         if(data.party[key].pokemon)
         {
-          $(`.party #slot-${Number(key)+1} #name`).html(data.party[key].name);
-          $(`.party #slot-${Number(key)+1} #sprite`).addClass(`pokedex-gen-${data.generation}-${data.party[key].type} pokemon-${data.party[key].pokemon.id}`);
+          $(`.party #slot-${Number(key)+1}`).html( SpriteDiv(data.generation, data.party[key].type, data.party[key].pokemon.id, data.party[key].name) );
         }
       }
     });
@@ -76,17 +67,20 @@
       for(var i = 1; i <= 6; i++)
       {
         $('.party').append(`
-          <div class="col-xs-6 col-sm-4" id="slot-${i}">
-            <div id="sprite" class="text-center center-block">
-              <div id="name" class="text-center"></div>
-            </div>
-          </div>
+          <div class="col-xs-6 col-sm-4" id="slot-${i}"></div>
       `);
         if(i % 2 == 0)
           $('.party').append(`<div class="clearfix visible-xs"></div>`);
         if(i % 3 == 0)
           $('.party').append(`<div class="clearfix hidden-xs"></div>`);
       }
+    }
+  </script>
+
+  <script type="text/javascript">
+    function SpriteDiv(generation, type, pokemon, name)
+    {
+      return `<div id="pokemon-sprite" class="text-center center-block pokedex-gen-${generation}-${type} pokemon-${pokemon}"><div id="pokemon-name" class="text-center">${name}</div></div>`
     }
   </script>
 

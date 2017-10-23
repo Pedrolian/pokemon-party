@@ -59,9 +59,7 @@ io.on('connection', (client) =>
   console.log('Client connected...');
 
   client.on("page-index", () => {
-
-    //console.log(PartyClass.Storage);
-
+    client.emit('parties', PartyClass.Parties);
   });
 
   client.on("party", (data) => 
@@ -113,3 +111,4 @@ io.on('connection', (client) =>
 });
 
 server.listen(4200);  
+console.log(`Sever initialized.. Go to http://localhost:4200`);
