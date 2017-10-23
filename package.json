@@ -1,7 +1,7 @@
 {
   "name": "pokemon-party",
   "version": "0.0.1",
-  "description": "Pokemon Party Tool to display to your live stream the pokemon in your party.",
+  "description": "Pokémon Party Tool to display to your live stream the Pokémon in your party.",
   "main": "app.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -12,6 +12,7 @@
   },
   "keywords": [
     "pokemon",
+    "pokémon",
     "party",
     "tool",
     "obs",

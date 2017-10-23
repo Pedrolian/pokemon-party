@@ -4,8 +4,6 @@
   <link href="/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
   <link rel="stylesheet" href="/awesomplete/awesomplete.css" />
 
-  <link href="/css/pokedex.css" rel="stylesheet">
-
   <style type="text/css">
     body{
       background-color: #eee;
@@ -36,7 +34,7 @@
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="#">Pokemon Party</a>
+        <a class="navbar-brand" href="#">Pokémon Party</a>
       </div>
       <div id="navbar" class="navbar-collapse collapse">
         <ul class="nav navbar-nav">
@@ -67,11 +65,22 @@
 
   <script>  
     var socket = io.connect(':4200');
+    
+    var Generation = {};
     var partyID = window.location.pathname.split('/')[2];
+    var slotID = Number(window.location.pathname.split('/')[3]) - 1;
 
     socket.on('connect', () =>
     {
       socket.emit('party', partyID);
+    });
+
+    socket.on('generation', (data) => 
+    {
+      Generation = data;
+      $('head').append(`<link rel="stylesheet" type="text/css" href="/css/pokedex/generation-${data.id}/normal.css">`);
+      if(data.hasShiny)
+        $('head').append(`<link rel="stylesheet" type="text/css" href="/css/pokedex/generation-${data.id}/shiny.css">`);
     });
 
     socket.on('party', (data) => {
@@ -97,7 +106,20 @@
       $(`div#error`).show().delay(10000).fadeOut(400);
     });
 
+    $(document).on('keyup','input',(e) =>
+    {
+      if(e.keyCode == 13)
+      {
+        e.preventDefault();
+        UpdateParty();
+        return false;
+      }
+    });
     $('button#update').click(() => {
+      UpdateParty();
+    });
+    function UpdateParty()
+    {
       var partyHTML = $('.party').children("div[id^=slot-]");
       var partyInput = [];
       for(var key in partyHTML)
@@ -109,7 +131,7 @@
         }
       }
       socket.emit('input', partyInput);
-    });
+    }
   </script>  
 
   <script type="text/javascript">
@@ -120,11 +142,11 @@
       for(var i = 1; i <= 6; i++)
       {
         $('.party').append(`
-          <div class="col-xs-6 col-sm-4" id="slot-${i}">
+          <div class="col-xs-6 col-sm-4 col-md-2" id="slot-${i}">
             <div id="sprite" class="text-center center-block"></div>
             <h3 class="text-center">Slot # ${i}</h3>
             <div class="form-group">
-              <label for="pokemon">Pokemon:</label>
+              <label for="pokemon">Pokémon:</label>
               <input type="text" class="form-control" id="pokemon">
             </div>
             <div class="form-group">
@@ -143,7 +165,9 @@
         if(i % 2 == 0)
           $('.party').append(`<div class="clearfix visible-xs"></div>`);
         if(i % 3 == 0)
-          $('.party').append(`<div class="clearfix hidden-xs"></div>`);
+          $('.party').append(`<div class="clearfix visible-sm"></div>`);
+        if(i % 6 == 0)
+          $('.party').append(`<div class="clearfix visible-md visible-lg"></div>`);
       }
     }
   </script>

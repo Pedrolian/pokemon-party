@@ -31,7 +31,7 @@ app.post('/', (req, res) =>
   res.redirect(`/party/${party.ID}`);
 });
 
-app.get("/generation/:generationId", (req, res) => {
+app.get("/generation/:generationId([1-6]{1})", (req, res) => {
   return res.send(Pokedex.Generation(req.params.generationId));
 });
 
@@ -47,7 +47,7 @@ app.get('/party/:partyId/simple', (req, res) =>
     return res.redirect(`/`);
   return res.sendFile(__dirname + '/public/simple.html');
 });
-app.get('/party/:partyId/:slotId', (req, res) => 
+app.get('/party/:partyId/:slotId([1-6]{1})', (req, res) => 
 {
   if(!Parties.hasOwnProperty(req.params.partyId))
     return res.redirect(`/`);
@@ -68,6 +68,7 @@ io.on('connection', (client) =>
     if(!Parties.hasOwnProperty(data))
       return io.to(`party-${data}`).emit('error', "Invalid party ID.");
 
+    io.to(`party-${data}`).emit('generation', Parties[data].Generation());
     io.to(`party-${data}`).emit('party',Parties[data]);
   });
 
