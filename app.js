@@ -3,13 +3,6 @@
 var PokedexClass = require('./lib/pokedex/');
 var Pokedex = new PokedexClass();
 
-/*
-Pokedex.Search("pikachu", (error, data) =>
-{
-  console.log(data);
-});
-*/
-
 // requires
 const express = require('express');  
 const app = express();  
@@ -47,6 +40,18 @@ app.get('/party/:partyId', (req, res) =>
   if(!Parties.hasOwnProperty(req.params.partyId))
     return res.redirect(`/`);
   return res.sendFile(__dirname + '/public/party.html');
+});
+app.get('/party/:partyId/simple', (req, res) => 
+{
+  if(!Parties.hasOwnProperty(req.params.partyId))
+    return res.redirect(`/`);
+  return res.sendFile(__dirname + '/public/simple.html');
+});
+app.get('/party/:partyId/:slotId', (req, res) => 
+{
+  if(!Parties.hasOwnProperty(req.params.partyId))
+    return res.redirect(`/`);
+  return res.sendFile(__dirname + '/public/slot.html');
 });
 
 // Socket IO
@@ -98,17 +103,6 @@ io.on('connection', (client) =>
     }
 
   });
-
-  /*
-  client.on('join', function(data) {
-    console.log(data);
-  });
-
-  client.on('messages', function(data) {
-    client.emit('broad', data);
-    client.broadcast.emit('broad',data);
-  });
-  */
 
 });
 
