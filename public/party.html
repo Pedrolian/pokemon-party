@@ -1,0 +1,179 @@
+<!doctype html>  
+<html lang="en">  
+<head>
+  <link href="/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="/awesomplete/awesomplete.css" />
+
+  <link href="/css/pokedex.css" rel="stylesheet">
+
+  <style type="text/css">
+    body{
+      background-color: #eee;
+      padding-top: 60px;
+    }
+    .row {
+      margin: 0px;
+    }
+    .panel {
+      margin: 20px;
+      padding-bottom: 10px;
+    }
+    .awesomplete {
+      display: inherit;
+    }
+  </style>
+
+</head>
+<body>
+  
+  <!-- Navigation -->
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">Pokemon Party</a>
+      </div>
+      <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="#">Home</a></li>
+          <li><a href="#about">Github</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="alert alert-danger" id="error" role="alert" style="display: none">
+  </div>
+
+  <!-- Party -->
+  <div class="container text-right">
+    <button type="submit" class="btn btn-sm btn-danger">Remove</button>
+  </div>
+  <div class="party row">
+  </div>
+  <div class="container text-center">
+    <button type="submit" class="btn btn-lg btn-success" id="update">Update</button>
+  </div>
+
+  <script src="/jquery/dist/jquery.min.js"></script>
+  <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
+  <script src="/awesomplete/awesomplete.min.js" async></script>
+  <script src="/socket.io/socket.io.js"></script>
+
+  <script>  
+    var socket = io.connect(':4200');
+    var partyID = window.location.pathname.split('/')[2];
+
+    socket.on('connect', () =>
+    {
+      socket.emit('party', partyID);
+    });
+
+    socket.on('party', (data) => {
+
+      Seed();
+      Pokedex(data.generation);
+
+      for(var key in data.party)
+      {
+        if(data.party[key].pokemon)
+        {
+          $(`.party #slot-${Number(key)+1} input#pokemon`).val(data.party[key].pokemon.name);
+          $(`.party #slot-${Number(key)+1} input#name`).val(data.party[key].name);
+          $(`.party #slot-${Number(key)+1} select#type`).val(data.party[key].type);
+          $(`.party #slot-${Number(key)+1} #sprite`).addClass(`pokedex-gen-${data.generation}-${data.party[key].type} pokemon-${data.party[key].pokemon.id}`);
+        }
+      }
+
+    });
+
+    socket.on('error', (message) => {
+      $(`div#error`).html(message);
+      $(`div#error`).show().delay(10000).fadeOut(400);
+    });
+
+    $('button#update').click(() => {
+      var partyHTML = $('.party').children("div[id^=slot-]");
+      var partyInput = [];
+      for(var key in partyHTML)
+      {
+        if(!isNaN(key))
+        {
+          var tmp = $(partyHTML)[key];
+          partyInput.push( {pokemon: $(tmp).find("input#pokemon").val(), name: $(tmp).find("input#name").val(), type: $(tmp).find("select#type").val()})
+        }
+      }
+      socket.emit('input', partyInput);
+    });
+  </script>  
+
+  <script type="text/javascript">
+    // Seed party div
+    function Seed()
+    {
+      $('.party').html("");
+      for(var i = 1; i <= 6; i++)
+      {
+        $('.party').append(`
+          <div class="col-xs-6 col-sm-4" id="slot-${i}">
+            <div id="sprite" class="text-center center-block"></div>
+            <h3 class="text-center">Slot # ${i}</h3>
+            <div class="form-group">
+              <label for="pokemon">Pokemon:</label>
+              <input type="text" class="form-control" id="pokemon">
+            </div>
+            <div class="form-group">
+              <label for="name">Name:</label>
+              <input type="text" class="form-control" id="name">
+            </div>
+            <div class="form-group">
+              <label for="type">Type:</label>
+              <select name="type" id="type" class="form-control">
+                <option value="normal" selected>Normal</option>
+                <option value="shiny">Shiny</option>
+              </select>
+            </div>
+          </div>
+      `);
+        if(i % 2 == 0)
+          $('.party').append(`<div class="clearfix visible-xs"></div>`);
+        if(i % 3 == 0)
+          $('.party').append(`<div class="clearfix hidden-xs"></div>`);
+      }
+    }
+  </script>
+
+  <script type="text/javascript">
+    function Pokedex(generation)
+    {
+      $.getJSON(`/generation/${generation}`, (data) => 
+      {
+        var simplePokedex = [];
+        for(var key in data.pokedex)
+        {
+          simplePokedex.push(data.pokedex[key].name);
+        }
+
+        var partyHTML = $('.party').children("div[id^=slot-]");
+        for(var key in partyHTML)
+        {
+          if(!isNaN(key))
+          {
+            var tmp = $(partyHTML)[key];
+            new Awesomplete( $(tmp).find("input#pokemon")[0], {
+              list: simplePokedex
+            });
+          }
+        }
+
+      });
+    }
+  </script>
+
+</body>
+</html> 

@@ -1,0 +1,94 @@
+<!doctype html>  
+<html lang="en">  
+<head>
+  <link href="/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+
+  <style type="text/css">
+    body{
+      background-color: #eee;
+      padding-top: 60px;
+    }
+    .row {
+      margin: 0px;
+    }
+    .panel {
+      margin: 20px;
+      padding-bottom: 10px;
+    }
+  </style>
+
+</head>
+<body>
+  
+  <!-- Navigation -->
+  <nav class="navbar navbar-inverse navbar-fixed-top">
+    <div class="container">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="#">Pokemon Party</a>
+      </div>
+      <div id="navbar" class="navbar-collapse collapse">
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="#">Home</a></li>
+          <li><a href="#about">Github</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <form class="form-horizontal" method="post">
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <h3 class="panel-title">Create Pokémon Party</h3>
+      </div>
+      <div class="panel-body">
+        <div class="form-group">
+          <label class="control-label col-sm-2" for="email">Select Generation:</label>
+          <div class="col-sm-10">
+            <select name="generation" class="form-control">
+              <option value="1">Generation I - Red & Blue</option>
+              <option value="2">Generation II - Gold & Silver</option>
+              <option value="3">Generation III - Ruby & Sapphire</option>
+              <option value="4">Generation IV - Diamond & Pearl</option>
+              <option value="5">Generation V - Black & White</option>
+              <option value="6" selected>Generation VI - X & Y</option>
+            </select>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container text-center">
+      <button type="submit" class="btn btn-lg btn-primary">+ Add Party</button>
+    </div>
+  </form>
+
+  <script src="/jquery/dist/jquery.min.js"></script>
+  <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+
+  <script>  
+    /*
+    var socket = io.connect(':4200');
+    socket.on('connect', function(data) 
+    {
+      socket.emit('join', 'Hello World from client');
+    });
+    socket.on('broad', function(data) {
+      $('#future').append(data+ "<br/>");
+   });
+   $('form').submit(function(e){
+       e.preventDefault();
+       var message = $('#chat_input').val();
+       socket.emit('messages', message);
+   });
+   */
+  </script>  
+
+</body>
+</html> 

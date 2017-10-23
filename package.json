@@ -1,6 +1,6 @@
 {
   "name": "pokemon-party",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Pokemon Party Tool to display to your live stream the pokemon in your party.",
   "main": "app.js",
   "scripts": {
@@ -24,5 +24,12 @@
   "bugs": {
     "url": "https://github.com/Pedrolian/pokemon-party/issues"
   },
-  "homepage": "https://github.com/Pedrolian/pokemon-party#readme"
+  "homepage": "https://github.com/Pedrolian/pokemon-party#readme",
+  "dependencies": {
+    "awesomplete": "^1.1.2",
+    "bootstrap": "^3.3.7",
+    "express": "^4.16.2",
+    "jquery": "^3.2.1",
+    "socket.io": "^2.0.4"
+  }
 }
