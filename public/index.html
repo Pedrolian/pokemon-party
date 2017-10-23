@@ -72,5 +72,19 @@
   <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
 
+  <script>  
+    var socket = io.connect(':4200');
+
+    socket.on('connect', () =>
+    {
+      socket.emit('page-index');
+    });
+
+    socket.on('parties', (data) =>
+    {
+      console.log(data);
+    });
+  </script>
+
 </body>
 </html> 

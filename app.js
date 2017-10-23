@@ -10,7 +10,6 @@ const server = require('http').createServer(app);
 const io = require('socket.io')(server);
 
 // Parties
-var Parties = {};
 const PartyClass = require('./lib/party');
 
 // Middleware
@@ -26,7 +25,7 @@ app.get('/', (req, res) => {
 app.post('/', (req, res) => 
 {
   var party = new PartyClass(req.body.generation);
-  Parties[party.ID] = party;
+  PartyClass.Parties[party.ID] = party;
   
   res.redirect(`/party/${party.ID}`);
 });
@@ -37,19 +36,19 @@ app.get("/generation/:generationId([1-6]{1})", (req, res) => {
 
 app.get('/party/:partyId', (req, res) => 
 {
-  if(!Parties.hasOwnProperty(req.params.partyId))
+  if(!PartyClass.Parties.hasOwnProperty(req.params.partyId))
     return res.redirect(`/`);
   return res.sendFile(__dirname + '/public/party.html');
 });
 app.get('/party/:partyId/simple', (req, res) => 
 {
-  if(!Parties.hasOwnProperty(req.params.partyId))
+  if(!PartyClass.Parties.hasOwnProperty(req.params.partyId))
     return res.redirect(`/`);
   return res.sendFile(__dirname + '/public/simple.html');
 });
 app.get('/party/:partyId/:slotId([1-6]{1})', (req, res) => 
 {
-  if(!Parties.hasOwnProperty(req.params.partyId))
+  if(!PartyClass.Parties.hasOwnProperty(req.params.partyId))
     return res.redirect(`/`);
   return res.sendFile(__dirname + '/public/slot.html');
 });
@@ -59,17 +58,23 @@ io.on('connection', (client) =>
 {  
   console.log('Client connected...');
 
+  client.on("page-index", () => {
+
+    //console.log(PartyClass.Storage);
+
+  });
+
   client.on("party", (data) => 
   {
     // Join room for emitting
     client.config = { party: data };
     client.join(`party-${data}`);
 
-    if(!Parties.hasOwnProperty(data))
+    if(!PartyClass.Parties.hasOwnProperty(data))
       return io.to(`party-${data}`).emit('error', "Invalid party ID.");
 
-    io.to(`party-${data}`).emit('generation', Parties[data].Generation());
-    io.to(`party-${data}`).emit('party',Parties[data]);
+    io.to(`party-${data}`).emit('generation', PartyClass.Parties[data].Generation());
+    io.to(`party-${data}`).emit('party',PartyClass.Parties[data]);
   });
 
   client.on("input", (data) => 
@@ -99,8 +104,8 @@ io.on('connection', (client) =>
     var counter = 1;
     if(!foundError)
     {
-      Parties[client.config.party].Set(data);
-      io.to(`party-${client.config.party}`).emit('party',Parties[client.config.party]);
+      PartyClass.Parties[client.config.party].Set(data);
+      io.to(`party-${client.config.party}`).emit('party',PartyClass.Parties[client.config.party]);
     }
 
   });
