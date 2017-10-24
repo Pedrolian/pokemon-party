@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <%- include("./layout/header", {title: (locals.title ? title : "") }) %>
+  <link href="/css/pokedex/bundled.css" rel="stylesheet">
+  <link href="/css/party/sprite.css" rel="stylesheet">
+  <style type="text/css">
+    .panel-party {
+      background-color: rgba(249, 245, 218, 0.89); /*#207394;*/
+      border-color: rgba(249, 242, 213, 0.57);
+    }
+    .panel-party .panel-heading {
+      border-color: #833118;
+      background-color: #207394;
+    }
+    .panel-party .btn-primary {
+      background-color: #084152;
+      border: 1px solid #0d4c5f;
+    }
+    .panel-party .btn-primary:hover {
+      background-color: #06262f;
+    }
+  </style>
+</head>
+<body>
+  <% include ./layout/navbar %>
+
+  <% if (locals.error) { %>
+    <%- include("./error/index", { 
+      error: (locals.error ? true : false), 
+      error_type: (locals.error_type ? error_type : "danger"), 
+      error_message: (locals.error_message ? error_message : "An unknown error has occured.") 
+    })%>
+  <% } %>
+
+  <!-- Create Party -->
+  <form class="form-horizontal" method="post" action="/">
+    <div class="panel panel-primary">
+      <div class="panel-heading">
+        <h3 class="panel-title">Create Pokémon Party</h3>
+      </div>
+      <div class="panel-body">
+        <div class="form-group">
+          <label class="control-label col-sm-2" for="email">Select Generation:</label>
+          <div class="col-sm-10">
+            <select name="generation" class="form-control">
+              <option value="1">Generation I - Red & Blue</option>
+              <option value="2">Generation II - Gold & Silver</option>
+              <option value="3">Generation III - Ruby & Sapphire</option>
+              <option value="4">Generation IV - Diamond & Pearl</option>
+              <option value="5">Generation V - Black & White</option>
+              <option value="6" selected>Generation VI - X & Y</option>
+            </select>
+          </div>
+        </div>
+      </div>
+      <div class="panel-footer">
+        <div class="text-center">
+          <button type="submit" class="btn btn-lg btn-primary">+ Add Party</button>
+        </div>
+      </div>
+    </div>
+  </form>
+
+  <div class="parties"></div>
+
+  <% include ./layout/footer %>
+  <script src="/js/party/sprite.js"></script>
+  
+  <script type="text/javascript">
+    var parties = <%- JSON.stringify(parties)  %>;
+
+    for(var key in parties)
+    {
+      var party = parties[key];
+      $(`.parties`).append(`
+        <div class="panel panel-primary panel-party" id="party-${party.ID}">
+          <div class="panel-heading row">
+            <div class="panel-title col-xs-8 text-left">Pokémon Party: ${party.ID}</div>
+            <div class="col-xs-4 text-right">
+              <a href="/party/${party.ID}" class="btn btn-sm btn-primary" target="_blank">
+                <span class="glyphicon glyphicon-edit"></span> Edit
+              </a>
+              <a href="/party/${party.ID}/simple" class="btn btn-sm btn-default" target="_blank">
+                <span class="glyphicon glyphicon-new-window"> Simple</span>
+              </a>
+              <a href="/party/${party.ID}/delete" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">
+                <span class="glyphicon glyphicon-remove"></span> Delete
+              </a>
+            </div>
+          </div>
+          <div class="panel-body">
+          </div>
+        </div>
+      `);
+      for(var i = 1; i <= 6; i++)
+      {
+        if(party.slots[i-1].pokemon)
+          $(`#party-${party.ID} .panel-body`).append(`
+            <div class="col-xs-2" id="slot-${i}">
+              ${SpriteDiv(party.generation.id, party.slots[i-1].type, party.slots[i-1].pokemon.id, party.slots[i-1].name)}
+            </div>
+          `);
+      }
+    }
+
+  </script>
+
+</body>

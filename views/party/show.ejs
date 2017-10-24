@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <link href="/reset-css/reset.css" rel="stylesheet">
+  <link href="/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/css/party/sprite.css" rel="stylesheet">
+</head>
+<body>
+
+  <div class="party"></div>
+
+  <% include ../layout/footer %>
+  <script src="/js/party/sprite.js"></script>
+
+  <script type="text/javascript">
+
+    var socket = io.connect(':4200');
+    var partyID = window.location.pathname.split('/')[2];
+
+    socket.on('connect', () =>
+    {
+     socket.emit('party-join', partyID);
+    });
+
+    socket.on('party-update', (data) =>
+    {
+      Seed();
+      Fill(data);
+    });
+  </script>
+
+  <!-- Seed -->
+  <script type="text/javascript">
+    Seed();
+    // Seed party div
+    function Seed()
+    {
+      $('.party').html("");
+      for(var i = 1; i <= 6; i++)
+      {
+        $('.party').append(`
+          <div class="col-xs-6 col-sm-4" id="slot-${i}"></div>
+      `);
+        if(i % 2 == 0)
+          $('.party').append(`<div class="clearfix visible-xs"></div>`);
+        if(i % 3 == 0)
+          $('.party').append(`<div class="clearfix hidden-xs"></div>`);
+      }
+    }
+  </script>
+
+  <script type="text/javascript">
+    var party = <%- JSON.stringify(party)  %>;
+
+    // Get CSS
+    $('head').append(`<link rel="stylesheet" type="text/css" href="/css/pokedex/generation-${party.generation.id}/normal.css">`);
+    if(party.generation.hasShiny)
+      $('head').append(`<link rel="stylesheet" type="text/css" href="/css/pokedex/generation-${party.generation.id}/shiny.css">`);
+
+    Fill(party);
+    function Fill(data)
+    {
+      for(var key in data.slots)
+      {
+        if(data.slots[key].pokemon)
+          $(`.party #slot-${Number(key)+1}`).html( SpriteDiv(data.generation.id, data.slots[key].type, data.slots[key].pokemon.id, data.slots[key].name) )
+      }
+    }
+  </script>
+
+</body>

@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <%- include("../layout/header", {title: (locals.title ? title : "") }) %>
+
+  <link href="/css/party/sprite.css" rel="stylesheet">
+  <style type="text/css">
+    .pokemon-panel {
+      margin: 5px;
+    }
+    .party{
+      background-color: white;
+      padding: 20px 0px 20px 0px;
+    }
+  </style>
+
+</head>
+<body>
+  <% include ../layout/navbar %>
+
+  <% if (locals.error) { %>
+    <%- include("../error/index", { 
+      error: (locals.error ? true : false), 
+      error_type: (locals.error_type ? error_type : "danger"), 
+      error_message: (locals.error_message ? error_message : "An unknown error has occured.") 
+    })%>
+  <% } %>
+
+  <div class="errors"></div>
+
+  <div class="panel panel-primary pokemon-panel">
+    <div class="panel-body">
+      <div class="party"></div>
+    </div>
+    <div class="panel-footer">
+      <div class="text-center">
+        <button type="submit" class="btn btn-lg btn-success" id="update">Update</button>
+        <p>
+          Export to OBS / XSplit: <span id="url"></span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <% include ../layout/footer %>
+  <script src="/js/party/sprite.js"></script>
+  
+  <script type="text/javascript">
+    Seed();
+    // Seed party div
+    function Seed()
+    {
+      $('.party').html("");
+      for(var i = 1; i <= 6; i++)
+      {
+        $('.party').append(`
+          <div class="col-xs-6 col-sm-4 col-md-2" id="slot-${i}">
+            <div id="sprite" class="text-center center-block"></div>
+            <h3 class="text-center">Slot # ${i}</h3>
+            <div class="form-group">
+              <label for="pokemon">Pokémon:</label>
+              <input type="text" class="form-control" id="pokemon">
+            </div>
+            <div class="form-group">
+              <label for="name">Name:</label>
+              <input type="text" class="form-control" id="name">
+            </div>
+            <div class="form-group">
+              <label for="type">Type:</label>
+              <select name="type" id="type" class="form-control">
+                <option value="normal" selected>Normal</option>
+                <option value="shiny">Shiny</option>
+              </select>
+            </div>
+          </div>
+      `);
+        if(i % 2 == 0)
+          $('.party').append(`<div class="clearfix visible-xs"></div>`);
+        if(i % 3 == 0)
+          $('.party').append(`<div class="clearfix visible-sm"></div>`);
+        if(i % 6 == 0)
+          $('.party').append(`<div class="clearfix visible-md visible-lg"></div>`);
+      }
+    }
+  </script>
+
+  <script type="text/javascript">
+
+    var pokedex = <%- JSON.stringify(pokedex)  %>;
+    var party = <%- JSON.stringify(party)  %>;
+
+    $(`.panel-footer #url`).html(`<a href="${window.location.href}/simple" target="_blank">${window.location.href}/simple</a>`);
+
+    var pokedexArray = [];
+    for(var key in pokedex)
+    {
+      pokedexArray.push(pokedex[key].name);
+    }
+
+    // Get CSS
+    $('head').append(`<link rel="stylesheet" type="text/css" href="/css/pokedex/generation-${party.generation.id}/normal.css">`);
+    if(party.generation.hasShiny)
+      $('head').append(`<link rel="stylesheet" type="text/css" href="/css/pokedex/generation-${party.generation.id}/shiny.css">`);
+
+    FillForm(party);
+    function FillForm(data)
+    {
+      for(var key in data.slots)
+      {
+        $(`.party #slot-${Number(key)+1} input#name`).val(data.slots[key].name);
+        $(`.party #slot-${Number(key)+1} select#type`).val(data.slots[key].type);
+        if(data.slots[key].pokemon)
+        {
+          $(`.party #slot-${Number(key)+1} input#pokemon`).val(data.slots[key].pokemon.name);
+          $(`.party #slot-${Number(key)+1} #sprite`).html( SpriteDiv(data.generation.id, data.slots[key].type, data.slots[key].pokemon.id, data.slots[key].name) );
+        }
+      }
+    }
+  </script>
+
+  <script type="text/javascript">
+    var socket = io.connect(':4200');
+
+    /*
+    socket.on('connect', () =>
+    {
+      console.log("Connected to server.");
+    });
+    */
+
+    $(document).on('keyup','input',(e) =>
+    {
+      if(e.keyCode == 13)
+      {
+        e.preventDefault();
+        UpdateParty();
+        return false;
+      }
+    });
+    $('button#update').click(() => {
+      UpdateParty();
+    });
+    function UpdateParty()
+    {
+      $('div.errors').html("");
+
+      //var partyHTML = $('.party').children("div[id^=slot-]");
+      var partyInput = [];
+
+      var foundError = false;
+
+      for(var i = 1; i <= 6; i++)
+      {
+        var tmp = $(`.party #slot-${i}`);
+
+        var tmpPokemon = $(tmp).find("input#pokemon").val();
+
+        // Validate if pokemon is in pokedex
+        if(tmpPokemon)
+        {
+          if(isNaN(tmpPokemon) && pokedexArray.indexOf(tmpPokemon.toLowerCase()) < 0 || !isNaN(tmpPokemon) &&  !pokedex.hasOwnProperty(tmpPokemon))
+          {
+            foundError = true;
+            $(`div.errors`).append(`<div class="alert alert-dismissable alert-danger" style="width: 96%; margin: auto;"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>Invalid pokemon: <strong>${tmpPokemon}</strong></div>`);
+          }
+          else
+          {
+            partyInput.push({ 
+              pokemon: ( isNaN(tmpPokemon) ? pokedex[pokedexArray.indexOf(tmpPokemon.toLowerCase())+1] : pokedex[tmpPokemon]), 
+              name: $(tmp).find("input#name").val(),
+              type: $(tmp).find("select#type").val()
+            });
+          }
+        }
+      }
+
+      if(!foundError && partyInput.length > 0)
+      {
+        // Replace locally party
+        party.slots = new Array(6).fill({ pokemon: false, name: "", type: "normal"});
+        for(var key in partyInput)
+        {
+          party.slots[key] = partyInput[key];
+        }
+        Seed();
+        FillForm(party);
+
+        // Send to server
+        socket.emit('party-update', party);
+      }
+    }
+  </script>
+
+</body>
