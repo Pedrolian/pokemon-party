@@ -1,6 +1,6 @@
 {
   "name": "pokemon-party",
-  "version": "0.0.2",
+  "version": "0.0.2.1",
   "description": "Pokémon Party Tool to display to your live stream the Pokémon in your party.",
   "main": "app.js",
   "scripts": {

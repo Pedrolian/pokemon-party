@@ -3,7 +3,9 @@
 <head>
   <%- include("../layout/header", {title: (locals.title ? title : "") }) %>
 
+  <link rel="stylesheet" href="/awesomplete/awesomplete.css" />
   <link href="/css/party/sprite.css" rel="stylesheet">
+
   <style type="text/css">
     .pokemon-panel {
       margin: 5px;
@@ -11,6 +13,9 @@
     .party{
       background-color: white;
       padding: 20px 0px 20px 0px;
+    }
+    .awesomplete {
+      display: inherit;
     }
   </style>
 
@@ -43,6 +48,7 @@
   </div>
 
   <% include ../layout/footer %>
+  <script src="/awesomplete/awesomplete.min.js"></script>
   <script src="/js/party/sprite.js"></script>
   
   <script type="text/javascript">
@@ -184,9 +190,24 @@
         }
         Seed();
         FillForm(party);
+        FillAwesomeplete();
 
         // Send to server
         socket.emit('party-update', party);
+      }
+    }
+  </script>
+
+  <script type="text/javascript">
+    FillAwesomeplete();
+    function FillAwesomeplete()
+    {
+      for(var i = 1; i <= 6; i++)
+      {
+        var tmp = $(`.party #slot-${i}`);
+        new Awesomplete( $(tmp).find("input#pokemon")[0], {
+          list: pokedexArray
+        });
       }
     }
   </script>
