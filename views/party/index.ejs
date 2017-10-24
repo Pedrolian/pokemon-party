@@ -52,6 +52,25 @@
   <script src="/js/party/sprite.js"></script>
   
   <script type="text/javascript">
+    var pokedex = <%- JSON.stringify(pokedex)  %>;
+    var party = <%- JSON.stringify(party)  %>;
+
+    $(`.panel-footer #url`).html(`<a href="${window.location.href}/simple" target="_blank">${window.location.href}/simple</a>`);
+
+    var pokedexArray = [];
+    for(var key in pokedex)
+    {
+      pokedexArray.push(pokedex[key].name);
+    }
+
+    // Get CSS
+    $('head').append(`<link rel="stylesheet" type="text/css" href="/css/pokedex/generation-${party.generation.id}/normal.css">`);
+    if(party.generation.hasShiny)
+      $('head').append(`<link rel="stylesheet" type="text/css" href="/css/pokedex/generation-${party.generation.id}/shiny.css">`);
+
+  </script>
+
+  <script type="text/javascript">
     Seed();
     // Seed party div
     function Seed()
@@ -73,7 +92,7 @@
             </div>
             <div class="form-group">
               <label for="type">Type:</label>
-              <select name="type" id="type" class="form-control">
+              <select name="type" id="type" class="form-control" ${party.generation.hasShiny ? "" : "disabled"}>
                 <option value="normal" selected>Normal</option>
                 <option value="shiny">Shiny</option>
               </select>
@@ -91,23 +110,6 @@
   </script>
 
   <script type="text/javascript">
-
-    var pokedex = <%- JSON.stringify(pokedex)  %>;
-    var party = <%- JSON.stringify(party)  %>;
-
-    $(`.panel-footer #url`).html(`<a href="${window.location.href}/simple" target="_blank">${window.location.href}/simple</a>`);
-
-    var pokedexArray = [];
-    for(var key in pokedex)
-    {
-      pokedexArray.push(pokedex[key].name);
-    }
-
-    // Get CSS
-    $('head').append(`<link rel="stylesheet" type="text/css" href="/css/pokedex/generation-${party.generation.id}/normal.css">`);
-    if(party.generation.hasShiny)
-      $('head').append(`<link rel="stylesheet" type="text/css" href="/css/pokedex/generation-${party.generation.id}/shiny.css">`);
-
     FillForm(party);
     function FillForm(data)
     {
