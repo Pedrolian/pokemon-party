@@ -65,6 +65,8 @@
   <script src="/awesomplete/awesomplete.min.js" async></script>
   <script src="/socket.io/socket.io.js"></script>
 
+  <script src="/js/sprite.js"></script>
+  
   <script>  
     var socket = io.connect(':4200');
     
@@ -176,7 +178,7 @@
   <script type="text/javascript">
     function Pokedex(generation)
     {
-      $.getJSON(`/generation/${generation}`, (data) => 
+      $.getJSON(`api/generation/${generation}`, (data) => 
       {
         var simplePokedex = [];
         for(var key in data.pokedex)
@@ -197,13 +199,6 @@
         }
 
       });
-    }
-  </script>
-
-  <script type="text/javascript">
-    function SpriteDiv(generation, type, pokemon, name)
-    {
-      return `<div id="pokemon-sprite" class="text-center center-block pokedex-gen-${generation}-${type} pokemon-${pokemon}"><div id="pokemon-name" class="text-center">${name}</div></div>`
     }
   </script>
 

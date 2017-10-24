@@ -3,10 +3,12 @@ div#pokemon-sprite {
 }
 div#pokemon-name {
   position: absolute;
-  bottom: -5px;
+  bottom: -12px;
   right: 0;
   left: 0;
-  background: rgba(46, 170, 220, 0.6);
-  color: white;
+  background: rgba(34, 34, 34, 0.9);
+  color: #fff;
   opacity: 0.9;
+  width: 90%;
+  margin: auto;
 }

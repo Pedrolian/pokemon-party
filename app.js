@@ -30,8 +30,18 @@ app.post('/', (req, res) =>
   res.redirect(`/party/${party.ID}`);
 });
 
-app.get("/generation/:generationId([1-6]{1})", (req, res) => {
+app.get("/api/generation/:generationId([1-6]{1})", (req, res) => {
   return res.send(Pokedex.Generation(req.params.generationId));
+});
+app.get("/api/party/:partyId", (req, res) => {
+  if(!PartyClass.Parties.hasOwnProperty(req.params.partyId))
+    return res.send({error: true, message: "Invalid party ID."});
+  return res.send({error: false, party: PartyClass.Parties[req.params.partyId].party});
+});
+app.get("/api/party/:partyId/:slotId([1-6]{1})", (req, res) => {
+  if(!PartyClass.Parties.hasOwnProperty(req.params.partyId))
+    return res.send({error: true, message: "Invalid party ID."});
+  return res.send({error: false, party: PartyClass.Parties[req.params.partyId].party[req.params.slotId]});
 });
 
 app.get('/party/:partyId', (req, res) => 

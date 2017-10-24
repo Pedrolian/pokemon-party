@@ -27,6 +27,8 @@
   <script src="/bootstrap/dist/js/bootstrap.min.js"></script>
   <script src="/socket.io/socket.io.js"></script>
 
+  <script src="/js/sprite.js"></script>
+
   <script>  
     var socket = io.connect(':4200');
 
@@ -54,13 +56,6 @@
         $(`.party #slot-1`).html( SpriteDiv(data.generation, tmp.type, tmp.pokemon.id, tmp.name) );
     });
   </script>  
-
-  <script type="text/javascript">
-    function SpriteDiv(generation, type, pokemon, name)
-    {
-      return `<div id="pokemon-sprite" class="text-center center-block pokedex-gen-${generation}-${type} pokemon-${pokemon}"><div id="pokemon-name" class="text-center">${name}</div></div>`
-    }
-  </script>
-
+  
 </body>
 </html> 
